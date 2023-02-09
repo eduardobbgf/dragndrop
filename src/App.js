@@ -4,9 +4,7 @@ import Columns from "./components/Columns/Columns";
 function App() {
   return (
     <>
-      <Columns />
-      <Columns />
-      <Columns />
+      <Columns></Columns>
     </>
   );
 }

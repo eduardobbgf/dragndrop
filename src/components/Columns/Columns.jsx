@@ -1,35 +1,59 @@
 import { useState, useRef } from "react";
 import Item from "../Item/Item";
 import { Container, Column } from "./styled";
+const columnsMockup = [
+  {
+    id: 1,
+    itens: [
+      { id: 1, name: "1" },
+      { id: 2, name: "2" },
+      { id: 5, name: "5" },
+      { id: 7, name: "7" },
+    ],
+  },
+  {
+    id: 2,
+    itens: [
+      { id: 3, name: "3" },
+      { id: 4, name: "4" },
+      { id: 8, name: "8" },
+      { id: 9, name: "9" },
+    ],
+  },
+];
 
 const Columns = () => {
-  const [itensColumn1, setItensColumn1] = useState([1, 2, 3, 4]);
-  const [itensColumn2, setItensColumn2] = useState([]);
+  const [columns, setColumns] = useState(columnsMockup);
 
   const itemDragged = useRef();
   const placeDragged = useRef();
-  const columnEnd = useRef();
-  const columnPos = useRef();
-  const dragStart = (e, index) => {
+
+  const dragStart = (e, index, columnId) => {
     itemDragged.current = index;
-    console.log(index);
+    itemDragged.columnId = columnId;
   };
 
-  const drag = (e, position) => {
+  const drag = (e, position, columnId) => {
     placeDragged.current = position;
+    placeDragged.columnId = columnId;
   };
 
-  const dragEnd = (e, index) => {
-    itemDragged.content = itensColumn1[itemDragged.current];
-    const temp = [...itensColumn1];
-    temp.splice(itemDragged.current, 1);
-    temp.splice(placeDragged.current, 0, itemDragged.content);
-    console.log(temp);
-    setItensColumn1(temp);
-    // setItensColumn2([
-    //   ...itensColumn1.splice(placeDragged.position, 0, placeDragged.content),
-    // ]);
-    console.log("drag end");
+  const dragEnd = (e, index, columnId) => {
+    itemDragged.content = columns.find(
+      (col) => col.id === itemDragged.columnId
+    ).itens[itemDragged.current];
+
+    const temp = [...columns];
+    temp
+      .find((col) => col.id === itemDragged.columnId)
+      .itens.splice(itemDragged.current, 1);
+    temp
+      .find((col) => col.id === placeDragged.columnId)
+      .itens.splice(placeDragged.current, 0, itemDragged.content);
+    setColumns(temp);
+
+    itemDragged.current = null;
+    placeDragged.current = null;
   };
 
   const dragOptions = {
@@ -37,28 +61,22 @@ const Columns = () => {
     dragEnd: dragEnd,
     dragStart: dragStart,
   };
+
   return (
     <Container>
-      <Column key={1}>
-        {itensColumn1.map((item, index) => (
-          <Item
-            dragOptions={dragOptions}
-            key={item}
-            item={item}
-            index={index}
-          ></Item>
-        ))}
-      </Column>
-      <Column key={2}>
-        {itensColumn2.map((item, index) => (
-          <Item
-            dragOptions={dragOptions}
-            key={item}
-            item={item}
-            index={index}
-          ></Item>
-        ))}
-      </Column>
+      {columns.map((col) => (
+        <Column key={col.id}>
+          {col.itens.map((item, index) => (
+            <Item
+              dragOptions={dragOptions}
+              key={item.id}
+              item={item.name}
+              index={index}
+              columnId={col.id}
+            ></Item>
+          ))}
+        </Column>
+      ))}
     </Container>
   );
 };

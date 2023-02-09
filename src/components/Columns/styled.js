@@ -7,6 +7,7 @@ export const Column = styled.div`
   border-radius: 3px;
   background-color: white;
   margin: 30px;
+  max-height: fit-content;
 `;
 
 export const Container = styled.div`
